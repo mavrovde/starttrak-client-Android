@@ -1,0 +1,246 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.startrack.android.startrack_android.activity.SearchActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_8_search"
+        android:scaleType="centerCrop" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:id="@+id/TitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:text="I would Like to Meet"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <RelativeLayout
+        android:id="@+id/SearchLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TitleText"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_rounded_search"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_serch_dark" />
+
+        <EditText
+            android:id="@+id/SearchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/iv_search_clear"
+            android:layout_toRightOf="@+id/iv_search"
+            android:background="@null"
+            android:hint="Keywords"
+            android:singleLine="true"
+            android:textColor="#282222"
+            android:textColorHint="#282222"
+            android:textCursorDrawable="@null"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_search_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="clearButtonOnClick"
+            android:padding="16dp"
+            android:src="@drawable/delete_dark" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/SearchButton"
+        android:layout_below="@+id/SearchLinearLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp">
+
+            <!-- SENIORITY -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/SeniorityTitleTextView"
+                    style="@style/SearchTitleTextView"
+                    android:text="SENIORITY" />
+
+                <TextView
+                    android:id="@+id/SeniorityValueTextView"
+                    style="@style/SearchValueTextView"
+                    android:layout_below="@+id/SeniorityTitleTextView"
+                    android:text="All" />
+
+                <ImageButton
+                    android:id="@+id/SeniorityButton"
+                    style="@style/SearchButton"
+                    android:onClick="seniorityButtonOnClick" />
+
+                <include
+                    layout="@layout/search_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/SeniorityValueTextView" />
+            </RelativeLayout>
+
+            <!-- INDUSTRY -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/IndustryTitleTextView"
+                    style="@style/SearchTitleTextView"
+                    android:text="INDUSTRY" />
+
+                <TextView
+                    android:id="@+id/IndustryValueTextView"
+                    style="@style/SearchValueTextView"
+                    android:layout_below="@+id/IndustryTitleTextView"
+                    android:text="All" />
+
+                <ImageButton
+                    android:id="@+id/IndustryButton"
+                    style="@style/SearchButton"
+                    android:onClick="industryButtonOnClick" />
+
+                <include
+                    layout="@layout/search_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/IndustryValueTextView" />
+            </RelativeLayout>
+
+            <!-- COUNTRY -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/CountryTitleTextView"
+                    style="@style/SearchTitleTextView"
+                    android:text="COUNTRY" />
+
+                <TextView
+                    android:id="@+id/CountryValueTextView"
+                    style="@style/SearchValueTextView"
+                    android:layout_below="@+id/CountryTitleTextView"
+                    android:text="All" />
+
+                <ImageButton
+                    android:id="@+id/CountryButton"
+                    style="@style/SearchButton"
+                    android:onClick="countryButtonOnClick" />
+
+                <include
+                    layout="@layout/search_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/CountryValueTextView" />
+            </RelativeLayout>
+
+            <!-- POSITION -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/PositionTitleTextView"
+                    style="@style/SearchTitleTextView"
+                    android:text="POSITION" />
+
+                <TextView
+                    android:id="@+id/PositionValueTextView"
+                    style="@style/SearchValueTextView"
+                    android:layout_below="@+id/PositionTitleTextView"
+                    android:text="All" />
+
+                <ImageButton
+                    android:id="@+id/PositionButton"
+                    style="@style/SearchButton"
+                    android:onClick="positionButtonOnClick" />
+
+                <include
+                    layout="@layout/search_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/PositionValueTextView" />
+            </RelativeLayout>
+
+            <!-- COMPANY SIZE -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/CompanySizeTitleTextView"
+                    style="@style/SearchTitleTextView"
+                    android:text="COMPANY SIZE" />
+
+                <TextView
+                    android:id="@+id/CompanySizeValueTextView"
+                    style="@style/SearchValueTextView"
+                    android:layout_below="@+id/CompanySizeTitleTextView"
+                    android:text="All" />
+
+                <ImageButton
+                    android:id="@+id/CompanySizeButton"
+                    style="@style/SearchButton"
+                    android:onClick="companySizeButtonOnClick" />
+
+                <include
+                    layout="@layout/search_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/CompanySizeValueTextView" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/SearchButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:background="@drawable/button_bg_sign_up"
+        android:onClick="doneButtonOnClick"
+        android:text="Search" />
+
+</RelativeLayout>
