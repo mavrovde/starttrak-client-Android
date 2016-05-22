@@ -3,6 +3,7 @@ package com.startrack.android.startrack_android.api;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 
 import com.startrack.android.startrack_android.activity.CreateOrReviewProfileActivity;
 import com.startrack.android.startrack_android.activity.IActivityWithHandler;
@@ -50,7 +51,6 @@ import java.util.TreeMap;
 public class APIService {
 
 
-
     // API OPERATION ASYNC TASKS
 
     public static class GetSessionIdOperation extends AsyncTask<IActivityWithHandler, Void, Void> {
@@ -66,84 +66,84 @@ public class APIService {
             4. Xing (OAuth1)
             {soc_network_type:3, oauth_token:””, oauth_token_secret:””}*/
             IActivityWithHandler activity = params[0];
-                try {
-                    HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.LOGIN_API);
-                    HttpClient httpclient = new DefaultHttpClient();
-                    String outputJSON = "";
-                    if (StarTrackApplication.soc_network_type == 0) {
-                        outputJSON = "{\"soc_network_type\":0, \"email\":\"" + StarTrackApplication.internal_account_email + "\", \"password\":\"" + StarTrackApplication.internal_account_password + "\"}";
-                    } else if (StarTrackApplication.soc_network_type == 1 || StarTrackApplication.soc_network_type == 2) {
-                        outputJSON = "{\"soc_network_type\":" + StarTrackApplication.soc_network_type + ", \"access_token\":\"" + StarTrackApplication.oauthToken + "\"}";
-                    } else if (StarTrackApplication.soc_network_type == 3) {
-                        outputJSON = "{\"soc_network_type\":" + StarTrackApplication.soc_network_type + ", \"oauth_token\":\"" + StarTrackApplication.oauthToken + "\", " + "\"oauth_token_secret\":\"" + StarTrackApplication.xingOauthRequestTokenSecret + "\"}";
-                    }
-                    httppost.setHeader("Content-Type", "application/json");
-                    HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
-                    httppost.setEntity(entity);
-                    HttpResponse response = httpclient.execute(httppost);
-                    String json = "";
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        json = json + line;
-                    }
-                    reader.close();
-                    if(response.getStatusLine().getStatusCode()== HttpStatus.SC_OK) {
-                        JSONObject jObject = new JSONObject(json);
-                        if (jObject.getInt("code") == 0) {
-                            JSONObject contentjObject = jObject.getJSONObject("content");
-                            StarTrackApplication.sessionId = contentjObject.getString("session_id");
-                            ApiHandler.setSessionIdFromPreferences(activity.getContext(), StarTrackApplication.sessionId);
-                            if (contentjObject.has("profile_exists")) {
-                                StarTrackApplication.profileExistsFlag = contentjObject.getBoolean("profile_exists");
-                            } else {
-                                // json doesn't have profile_exists property in the case of social network
-                            }
-                            Message msg = new Message();
-                            Bundle data = new Bundle();
-                            data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_SUCCESSFUL);
-                            msg.setData(data);
-                            activity.getHandler().sendMessage(msg);
+            try {
+                HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.LOGIN_API);
+                HttpClient httpclient = new DefaultHttpClient();
+                String outputJSON = "";
+                if (StarTrackApplication.soc_network_type == 0) {
+                    outputJSON = "{\"soc_network_type\":0, \"email\":\"" + StarTrackApplication.internal_account_email + "\", \"password\":\"" + StarTrackApplication.internal_account_password + "\"}";
+                } else if (StarTrackApplication.soc_network_type == 1 || StarTrackApplication.soc_network_type == 2) {
+                    outputJSON = "{\"soc_network_type\":" + StarTrackApplication.soc_network_type + ", \"access_token\":\"" + StarTrackApplication.oauthToken + "\"}";
+                } else if (StarTrackApplication.soc_network_type == 3) {
+                    outputJSON = "{\"soc_network_type\":" + StarTrackApplication.soc_network_type + ", \"oauth_token\":\"" + StarTrackApplication.oauthToken + "\", " + "\"oauth_token_secret\":\"" + StarTrackApplication.xingOauthRequestTokenSecret + "\"}";
+                }
+                httppost.setHeader("Content-Type", "application/json");
+                HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
+                httppost.setEntity(entity);
+                HttpResponse response = httpclient.execute(httppost);
+                String json = "";
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    json = json + line;
+                }
+                reader.close();
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    JSONObject jObject = new JSONObject(json);
+                    if (jObject.getInt("code") == 0) {
+                        JSONObject contentjObject = jObject.getJSONObject("content");
+                        StarTrackApplication.sessionId = contentjObject.getString("session_id");
+                        ApiHandler.setSessionIdFromPreferences(activity.getContext(), StarTrackApplication.sessionId);
+                        if (contentjObject.has("profile_exists")) {
+                            StarTrackApplication.profileExistsFlag = contentjObject.getBoolean("profile_exists");
                         } else {
-                            Message msg = new Message();
-                            Bundle data = new Bundle();
-                            data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                            data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, jObject.getInt("code"));
-                            msg.setData(data);
-                            activity.getHandler().sendMessage(msg);
+                            // json doesn't have profile_exists property in the case of social network
                         }
+                        Message msg = new Message();
+                        Bundle data = new Bundle();
+                        data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_SUCCESSFUL);
+                        msg.setData(data);
+                        activity.getHandler().sendMessage(msg);
                     } else {
                         Message msg = new Message();
                         Bundle data = new Bundle();
                         data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                        data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, response.getStatusLine().getStatusCode());
+                        data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, jObject.getInt("code"));
                         msg.setData(data);
                         activity.getHandler().sendMessage(msg);
                     }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                } else {
                     Message msg = new Message();
                     Bundle data = new Bundle();
                     data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                    data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-1));
-                    msg.setData(data);
-                    activity.getHandler().sendMessage(msg);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Message msg = new Message();
-                    Bundle data = new Bundle();
-                    data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                    data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-2));
-                    msg.setData(data);
-                    activity.getHandler().sendMessage(msg);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Message msg = new Message();
-                    Bundle data = new Bundle();
-                    data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                    data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-3));
+                    data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, response.getStatusLine().getStatusCode());
                     msg.setData(data);
                     activity.getHandler().sendMessage(msg);
                 }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                Message msg = new Message();
+                Bundle data = new Bundle();
+                data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
+                data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-1));
+                msg.setData(data);
+                activity.getHandler().sendMessage(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Message msg = new Message();
+                Bundle data = new Bundle();
+                data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
+                data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-2));
+                msg.setData(data);
+                activity.getHandler().sendMessage(msg);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Message msg = new Message();
+                Bundle data = new Bundle();
+                data.putString(ApiHandler.GETTING_SESSION_ID_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_SESSION_ID_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
+                data.putInt(ApiHandler.GETTING_SESSION_ID_RESULT_CODE_MSG_PROPERTY_NAME, (-3));
+                msg.setData(data);
+                activity.getHandler().sendMessage(msg);
+            }
 
             return null;
 
@@ -155,7 +155,7 @@ public class APIService {
         protected Void doInBackground(IActivityWithHandler... params) {
             IActivityWithHandler activity = params[0];
             try {
-                HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS+StarTrackApplication.VALIDATE_SESSION_TOKEN_API + "?session_id=" + StarTrackApplication.sessionId);
+                HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.VALIDATE_SESSION_TOKEN_API + "?session_id=" + StarTrackApplication.sessionId);
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response = httpclient.execute(httpGet);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
@@ -164,7 +164,7 @@ public class APIService {
                     json = json + line;
                 }
                 reader.close();
-                if(response.getStatusLine().getStatusCode()== HttpStatus.SC_OK) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     JSONObject jObject = new JSONObject(json);
                     if (jObject.getInt("code") == 0) {
                         JSONObject contentjObject = jObject.getJSONObject("content");
@@ -221,33 +221,26 @@ public class APIService {
         protected Void doInBackground(IActivityWithHandler... params) {
             try {
                 IActivityWithHandler activity = params[0];
-                    HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.GET_DICTIONARIES_API);
-                    addSessionId(httpGet);
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpResponse response = httpclient.execute(httpGet);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    String json = "";
-                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        json = json + line;
-                    }
-                    reader.close();
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                        JSONObject jObject = new JSONObject(json);
-                        if (jObject.getInt("code") == 0) {
-                            JSONObject contentJSONObject = jObject.getJSONObject("content");
-                            parseDictionaries(contentJSONObject);
-                            Message msg = new Message();
-                            Bundle data = new Bundle();
-                            data.putString(ApiHandler.GETTING_DICTIONARIES_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_DICTIONARIES_MSG_PROPERTY_VALUE_SUCCESSFUL);
-                            msg.setData(data);
-                            activity.getHandler().sendMessage(msg);
-                        } else {
-                            Message msg = new Message();
-                            Bundle data = new Bundle();
-                            data.putString(ApiHandler.GETTING_DICTIONARIES_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_DICTIONARIES_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
-                            msg.setData(data);
-                            activity.getHandler().sendMessage(msg);
-                        }
+                HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.GET_DICTIONARIES_API);
+                addSessionId(httpGet);
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse response = httpclient.execute(httpGet);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                String json = "";
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    json = json + line;
+                }
+                reader.close();
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    JSONObject jObject = new JSONObject(json);
+                    if (jObject.getInt("code") == 0) {
+                        JSONObject contentJSONObject = jObject.getJSONObject("content");
+                        parseDictionaries(contentJSONObject);
+                        Message msg = new Message();
+                        Bundle data = new Bundle();
+                        data.putString(ApiHandler.GETTING_DICTIONARIES_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_DICTIONARIES_MSG_PROPERTY_VALUE_SUCCESSFUL);
+                        msg.setData(data);
+                        activity.getHandler().sendMessage(msg);
                     } else {
                         Message msg = new Message();
                         Bundle data = new Bundle();
@@ -255,6 +248,13 @@ public class APIService {
                         msg.setData(data);
                         activity.getHandler().sendMessage(msg);
                     }
+                } else {
+                    Message msg = new Message();
+                    Bundle data = new Bundle();
+                    data.putString(ApiHandler.GETTING_DICTIONARIES_RESULT_MSG_PROPERTY_NAME, ApiHandler.GETTING_DICTIONARIES_MSG_PROPERTY_VALUE_UNSUCCESSFUL);
+                    msg.setData(data);
+                    activity.getHandler().sendMessage(msg);
+                }
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -288,12 +288,12 @@ public class APIService {
             IActivityWithHandler activity = params[0];
 
             try {
-                HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS+StarTrackApplication.PROFILE_API);
+                HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.PROFILE_API);
                 HttpClient httpclient = new DefaultHttpClient();
                 addSessionId(httppost);
                 //StarTrackApplication.currentProfile = createDummyProfile();
                 String outputJSON = createOutputJSONForCreateProfile(true);
-                HttpEntity entity = new ByteArrayEntity(outputJSON .getBytes("UTF-8"));
+                HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
                 httppost.setHeader("Content-Type", "application/json");
                 httppost.setEntity(entity);
                 HttpResponse response = httpclient.execute(httppost);
@@ -333,10 +333,10 @@ public class APIService {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
-               e.printStackTrace();
-        }
+                e.printStackTrace();
+            }
 
-        return null;
+            return null;
 
         }
     }
@@ -346,16 +346,16 @@ public class APIService {
         protected Void doInBackground(IActivityWithHandler... params) {
             try {
                 IActivityWithHandler activity = params[0];
-                    String json = "";
-                    HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.PROFILE_API);
-                    addSessionId(httpGet);
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpResponse response = httpclient.execute(httpGet);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        json = json + line;
-                    }
-                    reader.close();
+                String json = "";
+                HttpGet httpGet = new HttpGet(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.PROFILE_API);
+                addSessionId(httpGet);
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse response = httpclient.execute(httpGet);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    json = json + line;
+                }
+                reader.close();
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     JSONObject jObject = new JSONObject(json);
                     if (jObject.getInt("code") == 0) {
@@ -430,7 +430,7 @@ public class APIService {
                     json = json + line;
                 }
                 reader.close();
-                if(response.getStatusLine().getStatusCode()== HttpStatus.SC_OK) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     JSONObject jObject = new JSONObject(json);
                     if (jObject.getInt("code") == 0) {
                         JSONObject contentJSONObject = jObject.getJSONObject("content");
@@ -479,7 +479,7 @@ public class APIService {
     curl --request POST --verbose "https://api.xing.com/v1/request_token" -d "oauth_callback=oob" -d "oauth_version=1.0" -d "oauth_signature_method=PLAINTEXT"  -d "oauth_consumer_key=4cbc7615d6bfcb8d597e" -d "oauth_signature=817043f7325e2cf287ad462b6d93431ce8ee231b%26"
 */
 
-    public static class GetXingRequestToken extends AsyncTask<IActivityWithHandler, Void, Void>{
+    public static class GetXingRequestToken extends AsyncTask<IActivityWithHandler, Void, Void> {
         @Override
         protected Void doInBackground(IActivityWithHandler... params) {
             try {
@@ -490,9 +490,9 @@ public class APIService {
                 ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
                 postParameters.add(new BasicNameValuePair("oauth_consumer_key", AuthorizationDialog.XING_CLIENT_ID));
                 postParameters.add(new BasicNameValuePair("oauth_version", "1.0"));
-                postParameters.add(new BasicNameValuePair("oauth_callback", AuthorizationDialog. CALLBACK_URL));
+                postParameters.add(new BasicNameValuePair("oauth_callback", AuthorizationDialog.CALLBACK_URL));
                 postParameters.add(new BasicNameValuePair("oauth_signature_method", "PLAINTEXT"));
-                postParameters.add(new BasicNameValuePair("oauth_signature", AuthorizationDialog.XING_CLIENT_SECRET+"&"));
+                postParameters.add(new BasicNameValuePair("oauth_signature", AuthorizationDialog.XING_CLIENT_SECRET + "&"));
                 httppost.setEntity(new UrlEncodedFormEntity(postParameters));
                 HttpResponse response = httpclient.execute(httppost);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
@@ -501,7 +501,7 @@ public class APIService {
                     responseBody = responseBody + line;
                 }
                 reader.close();
-                if(response.getStatusLine().getStatusCode()== HttpStatus.SC_CREATED) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                     StarTrackApplication.xingOauthRequestToken = responseBody.substring(12, responseBody.indexOf("&oauth_token_secret="));
                     StarTrackApplication.xingOauthRequestTokenSecret = responseBody.substring(responseBody.indexOf("&oauth_token_secret=") + 20, responseBody.indexOf("&oauth_callback_confirmed="));
                     Message msg = new Message();
@@ -576,7 +576,7 @@ public class APIService {
     }*/
 
 
-    public static class SearchOperation  extends AsyncTask<IActivityWithHandler, Void, Void> {
+    public static class SearchOperation extends AsyncTask<IActivityWithHandler, Void, Void> {
         @Override
         protected Void doInBackground(IActivityWithHandler... params) {
 /*            Mandatory fields:
@@ -608,6 +608,7 @@ public class APIService {
                     position_id:<...>,
                 }*/
                 String outputJSON = createOutputJSONForSearchOperation();
+                Log.d("TAG1", "outputJSON=" + outputJSON);
                 HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
                 httppost.setHeader("Content-Type", "application/json");
                 httppost.setEntity(entity);
@@ -621,6 +622,7 @@ public class APIService {
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     JSONObject jObject = new JSONObject(json);
                     if (jObject.getInt("code") == 0) {
+                        StarTrackApplication.searchResults = new ArrayList<>();
                         JSONArray contentJSONArray = jObject.getJSONArray("content");
                         for (int i = 0; i < contentJSONArray.length(); i++) {
                             StarTrackApplication.searchResults.add(new Profile(contentJSONArray.getJSONObject(i)));
@@ -657,7 +659,13 @@ public class APIService {
         }
     }
 
-    public static class MeetOperation  extends AsyncTask<IActivityWithHandler, Void, Void> {
+    public static class MeetOperation extends AsyncTask<IActivityWithHandler, Void, Void> {
+        private String message;
+
+        public MeetOperation(String message) {
+            this.message = message;
+        }
+
         @Override
         protected Void doInBackground(IActivityWithHandler... params) {
 /*           Request Body :
@@ -671,9 +679,9 @@ Response:
 
             try {
                 IActivityWithHandler activity = params[0];
-                    HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.MEET_API);
-                    HttpClient httpclient = new DefaultHttpClient();
-                    addSessionId(httppost);
+                HttpPost httppost = new HttpPost(StarTrackApplication.SERVER_ADRESS + StarTrackApplication.MEET_API);
+                HttpClient httpclient = new DefaultHttpClient();
+                addSessionId(httppost);
 /*
                 {
                     search_text : “something”,
@@ -683,17 +691,17 @@ Response:
                     country_id:<...>,
                     position_id:<...>,
                 }*/
-                    String outputJSON = createOutputJSONForMeet();
-                    HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
-                    httppost.setHeader("Content-Type", "application/json");
-                    httppost.setEntity(entity);
-                    HttpResponse response = httpclient.execute(httppost);
-                    String json = "";
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        json = json + line;
-                    }
-                    reader.close();
+                String outputJSON = createOutputJSONForMeet(message);
+                HttpEntity entity = new ByteArrayEntity(outputJSON.getBytes("UTF-8"));
+                httppost.setHeader("Content-Type", "application/json");
+                httppost.setEntity(entity);
+                HttpResponse response = httpclient.execute(httppost);
+                String json = "";
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    json = json + line;
+                }
+                reader.close();
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     JSONObject jObject = new JSONObject(json);
                     if (jObject.getInt("code") == 0) {
@@ -744,8 +752,8 @@ Response:
     private static String PROFILE_TEST_CONTENT_JSON_STRING = "{\"email\":\"valentinrogovskiy@gmail.com\",\"user_id\":371,\"title_id\":1,\"first_name\":\"Valentin\",\"last_name\":\"Rogovskiy\",\"phone_number\":\"\",\"country_id\":null,\"state_id\":null,\"city_name\":\"\",\"company_name\":\"B2B\",\"position_id\":null,\"industry_id\":null,\"seniority_id\":5,\"size_id\":null,\"soc_network_type\":2,\"profile_pic\":null}";
 
     //COMMON METHODS
-    public static void addSessionId(HttpRequestBase httpRequest){
-        if(StarTrackApplication.sessionId!=null){
+    public static void addSessionId(HttpRequestBase httpRequest) {
+        if (StarTrackApplication.sessionId != null) {
             httpRequest.addHeader("x-auth-id", StarTrackApplication.sessionId);
         }
     }
@@ -763,101 +771,101 @@ Response:
 *     10 - position
 * */
 
-    private static String createOutputJSONForCreateProfile(boolean createOrUpdateFlag){
+    private static String createOutputJSONForCreateProfile(boolean createOrUpdateFlag) {
         Profile currentProfile = StarTrackApplication.currentProfile;
         StringBuffer outputJSON = new StringBuffer();
-        if(currentProfile != null) {
+        if (currentProfile != null) {
             outputJSON.append("{");
 /*            if(currentProfile.getEmail()!=null&&createOrUpdateFlag) {
                 outputJSON.append("\"email\":\"" + currentProfile.getEmail() + "\"");
                 outputJSON.append(",");
             }*/
             boolean commaFlag = false;
-                if(currentProfile.editableProperties.get(0)!=null){
-                    if(!currentProfile.editableProperties.get(0).getPropertyValue().equals("")) {
-                        outputJSON.append("\"first_name\":\"" + currentProfile.editableProperties.get(0).getPropertyValue() + "\"");
-                        commaFlag = true;
-                    }
+            if (currentProfile.editableProperties.get(0) != null) {
+                if (!currentProfile.editableProperties.get(0).getPropertyValue().equals("")) {
+                    outputJSON.append("\"first_name\":\"" + currentProfile.editableProperties.get(0).getPropertyValue() + "\"");
+                    commaFlag = true;
                 }
-                if(currentProfile.editableProperties.get(1)!= null){
-                    if(!currentProfile.editableProperties.get(1).getPropertyValue().equals("")) {
-                        if(commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("last_name\":\"" + currentProfile.editableProperties.get(1).getPropertyValue() + "\"");
-                        commaFlag = true;
+            }
+            if (currentProfile.editableProperties.get(1) != null) {
+                if (!currentProfile.editableProperties.get(1).getPropertyValue().equals("")) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("last_name\":\"" + currentProfile.editableProperties.get(1).getPropertyValue() + "\"");
+                    commaFlag = true;
                 }
+            }
 
-                if(currentProfile.editableProperties.get(2)!= null){
-                    if(!currentProfile.editableProperties.get(2).getPropertyValue().equals("")) {
-                        if(commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("phone_number\":\"" + currentProfile.editableProperties.get(2).getPropertyValue() + "\"");
-                        commaFlag = true;
+            if (currentProfile.editableProperties.get(2) != null) {
+                if (!currentProfile.editableProperties.get(2).getPropertyValue().equals("")) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("phone_number\":\"" + currentProfile.editableProperties.get(2).getPropertyValue() + "\"");
+                    commaFlag = true;
                 }
-                if(currentProfile.editableProperties.get(3)!= null){
-                    if(!currentProfile.editableProperties.get(3).getPropertyValue().equals("")) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("company_name\":\"" + currentProfile.editableProperties.get(3).getPropertyValue() + "\"");
-                        commaFlag = true;
+            }
+            if (currentProfile.editableProperties.get(3) != null) {
+                if (!currentProfile.editableProperties.get(3).getPropertyValue().equals("")) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("company_name\":\"" + currentProfile.editableProperties.get(3).getPropertyValue() + "\"");
+                    commaFlag = true;
                 }
-                if(currentProfile.selectableProperties.get(4)!=null){
-                    if(currentProfile.selectableProperties.get(4).getValueId()!=(-1)) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("size_id\":" + currentProfile.selectableProperties.get(4).getValueId());
-                        commaFlag = true;
+            }
+            if (currentProfile.selectableProperties.get(4) != null) {
+                if (currentProfile.selectableProperties.get(4).getValueId() != (-1)) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("size_id\":" + currentProfile.selectableProperties.get(4).getValueId());
+                    commaFlag = true;
                 }
-                if(currentProfile.selectableProperties.get(5)!= null){
-                    if(currentProfile.selectableProperties.get(5).getValueId()!=(-1)) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("title_id\":" + currentProfile.selectableProperties.get(5).getValueId());
-                        commaFlag = true;
+            }
+            if (currentProfile.selectableProperties.get(5) != null) {
+                if (currentProfile.selectableProperties.get(5).getValueId() != (-1)) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("title_id\":" + currentProfile.selectableProperties.get(5).getValueId());
+                    commaFlag = true;
                 }
-                if(currentProfile.selectableProperties.get(6)!= null){
-                    if(currentProfile.selectableProperties.get(6).getValueId()!=(-1)) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("seniority_id\":" + currentProfile.selectableProperties.get(6).getValueId());
-                        commaFlag = true;
+            }
+            if (currentProfile.selectableProperties.get(6) != null) {
+                if (currentProfile.selectableProperties.get(6).getValueId() != (-1)) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("seniority_id\":" + currentProfile.selectableProperties.get(6).getValueId());
+                    commaFlag = true;
                 }
-                if(currentProfile.selectableProperties.get(7)!= null){
-                    if(currentProfile.selectableProperties.get(7).getValueId()!=(-1)) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("industry_id\":" + currentProfile.selectableProperties.get(7).getValueId());
-                        commaFlag = true;
+            }
+            if (currentProfile.selectableProperties.get(7) != null) {
+                if (currentProfile.selectableProperties.get(7).getValueId() != (-1)) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("industry_id\":" + currentProfile.selectableProperties.get(7).getValueId());
+                    commaFlag = true;
                 }
-                if(currentProfile.selectableProperties.get(8)!= null){
-                    if(currentProfile.selectableProperties.get(8).getValueId()!=(-1)) {
-                        if (commaFlag) {
-                            outputJSON.append(",\"");
-                        }
-                        outputJSON.append("country_id\":" + currentProfile.selectableProperties.get(8).getValueId());
-                        commaFlag = true;
+            }
+            if (currentProfile.selectableProperties.get(8) != null) {
+                if (currentProfile.selectableProperties.get(8).getValueId() != (-1)) {
+                    if (commaFlag) {
+                        outputJSON.append(",\"");
                     }
+                    outputJSON.append("country_id\":" + currentProfile.selectableProperties.get(8).getValueId());
+                    commaFlag = true;
                 }
+            }
 /*                if(currentProfile.selectableProperties.get(9)!= null){
                     outputJSON.append(",\"");
                     outputJSON.append("state_id\":" + currentProfile.selectableProperties.get(9).getValueId());
                 }*/
-                outputJSON.append("}");
-                return outputJSON.toString();
+            outputJSON.append("}");
+            return outputJSON.toString();
         }
         return "{}";
     }
@@ -872,40 +880,40 @@ Response:
         position_id:<...>,
     }*/
 
-    private static String createOutputJSONForSearchOperation(){
+    private static String createOutputJSONForSearchOperation() {
         StringBuffer outputJSON = new StringBuffer();
         outputJSON.append("{");
-        if(StarTrackApplication.searchText.length()>0){
+        if (StarTrackApplication.searchText.length() > 0) {
             outputJSON.append("\"search_text\" : \"" + StarTrackApplication.searchText + "\",");
         } else {
             outputJSON.append("\"search_text\" : null,");
         }
-        if(StarTrackApplication.titleId>(-1)){
+        if (StarTrackApplication.titleId > (-1)) {
             outputJSON.append("\"title_id\" : \"" + StarTrackApplication.titleId + "\",");
         } else {
             outputJSON.append("\"title_id\" : null,");
         }
-        if(StarTrackApplication.seniorityId>(-1)){
+        if (StarTrackApplication.seniorityId > (-1)) {
             outputJSON.append("\"seniority_id\" : \"" + StarTrackApplication.seniorityId + "\",");
         } else {
             outputJSON.append("\"seniority_id\" : null,");
         }
-        if(StarTrackApplication.industryId>(-1)){
+        if (StarTrackApplication.industryId > (-1)) {
             outputJSON.append("\"industry_id\" : \"" + StarTrackApplication.industryId + "\",");
         } else {
             outputJSON.append("\"industry_id\" : null,");
         }
-        if(StarTrackApplication.countryId>(-1)){
+        if (StarTrackApplication.countryId > (-1)) {
             outputJSON.append("\"country_id\" : \"" + StarTrackApplication.countryId + "\",");
         } else {
             outputJSON.append("\"country_id\" : null,");
         }
-        if(StarTrackApplication.positionId>(-1)){
+        if (StarTrackApplication.positionId > (-1)) {
             outputJSON.append("\"position_id\" : \"" + StarTrackApplication.positionId + "\",");
         } else {
             outputJSON.append("\"position_id\" : null,");
         }
-        if(StarTrackApplication.companysizeId>(-1)){
+        if (StarTrackApplication.companysizeId > (-1)) {
             outputJSON.append("\"size_id\" : \"" + StarTrackApplication.companysizeId + "\"");
         } else {
             outputJSON.append("\"size_id\" : null");
@@ -914,17 +922,43 @@ Response:
         return outputJSON.toString();
     }
 
-    private static String createOutputJSONForMeet(){
-        StringBuffer outputJSON = new StringBuffer();
-        outputJSON.append("{\"user_ids\": [");
-       for(int i = 0; i<MatchesActivity.checkedItems.size(); i++){
-            outputJSON.append(MatchesActivity.checkedItems.get(i));
-            if((i+1)<MatchesActivity.checkedItems.size()){
-                outputJSON.append(",");
-            }
-       }
-        outputJSON.append("]}");
-        return outputJSON.toString();
+    private static String createOutputJSONForMeet(String message) {
+        JSONObject req = new JSONObject();
+        JSONArray ids = new JSONArray();
+        for (int i = 0; i < MatchesActivity.checkedItems.size(); i++) {
+            ids.put(MatchesActivity.checkedItems.get(i));
+        }
+        try {
+            req.put("user_ids", ids);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            req.put("send", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            req.put("message", message);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("TAG1", "mmreq=" + req.toString());
+        return req.toString();
+//        StringBuffer outputJSON = new StringBuffer();
+//        outputJSON.append("{\"user_ids\": [");
+//        for (int i = 0; i < MatchesActivity.checkedItems.size(); i++) {
+//            outputJSON.append(MatchesActivity.checkedItems.get(i));
+//            if ((i + 1) < MatchesActivity.checkedItems.size()) {
+//                outputJSON.append(",");
+//            }
+//        }
+//        outputJSON.append("]}");
+//        Log.d("TAG1", "meet req=" + outputJSON.toString());
+//        return outputJSON.toString();
     }
 
 /*
@@ -960,7 +994,7 @@ Response:
         // Here I am copying the sorted list in HashMap
         // using LinkedHashMap to preserve the insertion order
         HashMap sortedHashMap = new LinkedHashMap();
-        for (Iterator it = list.iterator(); it.hasNext();) {
+        for (Iterator it = list.iterator(); it.hasNext(); ) {
             Map.Entry entry = (Map.Entry) it.next();
             sortedHashMap.put(entry.getKey(), entry.getValue());
         }
@@ -968,8 +1002,8 @@ Response:
     }
 
     //PARSERS
-    public static void parseDictionaries(JSONObject dictionariesJsonObject){
-        Map<Integer,Map> dictionaries = StarTrackApplication.dictionaries;
+    public static void parseDictionaries(JSONObject dictionariesJsonObject) {
+        Map<Integer, Map> dictionaries = StarTrackApplication.dictionaries;
         try {
 /*    4 - company size
 *     5 - title
@@ -980,9 +1014,9 @@ Response:
 *     10 - position
 * */
             //8 - country
-            JSONArray countriesJSONArray =  dictionariesJsonObject.getJSONArray("countries");
+            JSONArray countriesJSONArray = dictionariesJsonObject.getJSONArray("countries");
             HashMap<Integer, String> countriesMap = new HashMap<Integer, String>();
-            for(int i =0; i<countriesJSONArray.length(); i++){
+            for (int i = 0; i < countriesJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) countriesJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
@@ -991,71 +1025,71 @@ Response:
             dictionaries.put(8, sortByValues(countriesMap));
 
             //10 - position
-            JSONArray positionsJSONArray =  dictionariesJsonObject.getJSONArray("positions");
+            JSONArray positionsJSONArray = dictionariesJsonObject.getJSONArray("positions");
             HashMap<Integer, String> positionsMap = new HashMap<Integer, String>();
-            for(int i =0; i<positionsJSONArray.length(); i++){
+            for (int i = 0; i < positionsJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) positionsJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
-                positionsMap.put(id,label);
+                positionsMap.put(id, label);
             }
             dictionaries.put(10, sortByValues(positionsMap));
 
             //4 - company size
-            JSONArray sizesJSONArray =  dictionariesJsonObject.getJSONArray("sizes");
-            Map<Integer, Map<Integer, String>> sizesMap = new TreeMap<Integer, Map<Integer, String> >();
-            for(int i =0; i<sizesJSONArray.length(); i++){
+            JSONArray sizesJSONArray = dictionariesJsonObject.getJSONArray("sizes");
+            Map<Integer, Map<Integer, String>> sizesMap = new TreeMap<Integer, Map<Integer, String>>();
+            for (int i = 0; i < sizesJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) sizesJSONArray.get(i);
                 int minValue = jsonObject.getInt("minValue");
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
                 Map<Integer, String> tempMap = new HashMap<Integer, String>();
-                tempMap.put(id,label);
-                sizesMap.put(minValue,tempMap);
+                tempMap.put(id, label);
+                sizesMap.put(minValue, tempMap);
             }
             dictionaries.put(4, sizesMap);
 
             //7 - industry
-            JSONArray industryJSONArray =  dictionariesJsonObject.getJSONArray("industries");
+            JSONArray industryJSONArray = dictionariesJsonObject.getJSONArray("industries");
             HashMap<Integer, String> industryMap = new HashMap<Integer, String>();
-            for(int i =0; i<industryJSONArray.length(); i++){
+            for (int i = 0; i < industryJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) industryJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
-                industryMap.put(id,label);
+                industryMap.put(id, label);
             }
             dictionaries.put(7, sortByValues(industryMap));
 
             //5 - title
-            JSONArray titleJSONArray =  dictionariesJsonObject.getJSONArray("titles");
+            JSONArray titleJSONArray = dictionariesJsonObject.getJSONArray("titles");
             HashMap<Integer, String> titleMap = new HashMap<Integer, String>();
-            for(int i =0; i<titleJSONArray.length(); i++){
+            for (int i = 0; i < titleJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) titleJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
-                titleMap.put(id,label);
+                titleMap.put(id, label);
             }
             dictionaries.put(5, sortByValues(titleMap));
 
             //6 - seniority
-            JSONArray seniorityJSONArray =  dictionariesJsonObject.getJSONArray("seniority");
+            JSONArray seniorityJSONArray = dictionariesJsonObject.getJSONArray("seniority");
             HashMap<Integer, String> seniorityMap = new HashMap<Integer, String>();
-            for(int i =0; i<seniorityJSONArray.length(); i++){
+            for (int i = 0; i < seniorityJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) seniorityJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
-                seniorityMap.put(id,label);
+                seniorityMap.put(id, label);
             }
             dictionaries.put(6, sortByValues(seniorityMap));
 
             //9 - state
-            JSONArray stateJSONArray =  dictionariesJsonObject.getJSONArray("states");
+            JSONArray stateJSONArray = dictionariesJsonObject.getJSONArray("states");
             HashMap<Integer, String> stateMap = new HashMap<Integer, String>();
-            for(int i =0; i<stateJSONArray.length(); i++){
+            for (int i = 0; i < stateJSONArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) stateJSONArray.get(i);
                 int id = jsonObject.getInt("id");
                 String label = jsonObject.getString("label");
-                stateMap.put(id,label);
+                stateMap.put(id, label);
             }
             dictionaries.put(9, sortByValues(stateMap));
         } catch (JSONException e) {

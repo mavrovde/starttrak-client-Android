@@ -57,9 +57,11 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/MeetButton"
         android:layout_below="@+id/relativeLayout"
+        android:cacheColorHint="@android:color/transparent"
         android:descendantFocusability="beforeDescendants"
         android:dividerHeight="0dp"
-        android:focusableInTouchMode="true" />
+        android:focusableInTouchMode="true"
+        android:listSelector="@android:color/transparent" />
 
     <Button
         android:id="@+id/MeetButton"

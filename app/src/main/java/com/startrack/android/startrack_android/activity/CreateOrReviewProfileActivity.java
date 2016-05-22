@@ -17,15 +17,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.startrack.android.startrack_android.R;
 import com.startrack.android.startrack_android.api.APIService;
 import com.startrack.android.startrack_android.app.StarTrackApplication;
-import com.startrack.android.startrack_android.model.BaseProfileProperty;
 import com.startrack.android.startrack_android.model.EditableProfileProperty;
-import com.startrack.android.startrack_android.model.Profile;
 import com.startrack.android.startrack_android.model.SelectableProfileProperty;
 import com.startrack.android.startrack_android.view.EditableProfilePropertyView;
 import com.startrack.android.startrack_android.view.RoundedImageView;
@@ -44,7 +43,7 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
     private Button doneButton;
     private TextView titleTextView;
     private ProgressBar progressBar;
-    private LinearLayout linearLayout;
+    private ScrollView linearLayout;
     private ImageView avatarImageView;
     public static String CREATE_OR_REVIEW_FLAG_EXTRA_NAME = "CreateOrReviewFlag";
     public static String CREATE_EXTRA_VALUE = "Create";
@@ -53,8 +52,8 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
     public boolean madeChangesFlag = false;
     public String createOrReviewFlag;
 
-    private Map<Integer,SelectableProfilePropertyView> selectableProfilePropertyViewMap = new HashMap<Integer,SelectableProfilePropertyView>();
-    private Map<Integer,EditableProfilePropertyView> editableProfilePropertyViewMap = new HashMap<Integer,EditableProfilePropertyView>();
+    private Map<Integer, SelectableProfilePropertyView> selectableProfilePropertyViewMap = new HashMap<Integer, SelectableProfilePropertyView>();
+    private Map<Integer, EditableProfilePropertyView> editableProfilePropertyViewMap = new HashMap<Integer, EditableProfilePropertyView>();
 
     private LinearLayout propertiesLinearLayout;
 
@@ -67,11 +66,11 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
         init();
         this.createOrReviewFlag = getIntent().getStringExtra(CreateOrReviewProfileActivity.CREATE_OR_REVIEW_FLAG_EXTRA_NAME);
         //StarTrackApplication.sessionId = "89325b83-5730-4e5f-9e2b-4965d130f93e";
-        if(createOrReviewFlag.equals(CREATE_EXTRA_VALUE)){
+        if (createOrReviewFlag.equals(CREATE_EXTRA_VALUE)) {
             madeChangesFlag = true;
             showCreateScreen();
             //StarTrackApplication.currentProfile = new Profile();
-        } else if(createOrReviewFlag.equals(REVIEW_EXTRA_VALUE)){
+        } else if (createOrReviewFlag.equals(REVIEW_EXTRA_VALUE)) {
             madeChangesFlag = false;
             showReviewScreen();
         }
@@ -90,31 +89,32 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
     public static String UPDATING_PROFILE_MSG_PROPERTY_VALUE_SUCCESSFUL = "UPDATED_PROFILE_SUCCESSFUL";
     public static String UPDATING_PROFILE_MSG_PROPERTY_VALUE_UNSUCCESSFUL = "UPDATE_PROFILE_UNSUCCESSFUL";
 
-    private void initHandler(){
+    private void initHandler() {
         handler = new Handler() {
 
             @Override
             public void handleMessage(Message msg) {
 
-                if(msg.getData().getString(CreateOrReviewProfileActivity.CREATING_PROFILE_RESULT_MSG_PROPERTY_NAME) != null){
+                if (msg.getData().getString(CreateOrReviewProfileActivity.CREATING_PROFILE_RESULT_MSG_PROPERTY_NAME) != null) {
                     if (msg.getData().getString(CreateOrReviewProfileActivity.CREATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.CREATING_PROFILE_MSG_PROPERTY_VALUE_SUCCESSFUL)) {
-                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, SearchActivity.class);
+//                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, SearchActivity.class);
+                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, StartTrackingActivity.class);
                         hideProgressAndShowViews();
                         startActivity(intent);
                         CreateOrReviewProfileActivity.this.finish();
-                    } else if (msg.getData().getString(CreateOrReviewProfileActivity.CREATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.CREATING_PROFILE_MSG_PROPERTY_VALUE_UNSUCCESSFUL)){
+                    } else if (msg.getData().getString(CreateOrReviewProfileActivity.CREATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.CREATING_PROFILE_MSG_PROPERTY_VALUE_UNSUCCESSFUL)) {
                         hideProgressAndShowViews();
                         Toast.makeText(CreateOrReviewProfileActivity.this, "Failed to create profile",
                                 Toast.LENGTH_LONG).show();
                     }
-                } else
-                if(msg.getData().getString(CreateOrReviewProfileActivity.UPDATING_PROFILE_RESULT_MSG_PROPERTY_NAME) != null){
+                } else if (msg.getData().getString(CreateOrReviewProfileActivity.UPDATING_PROFILE_RESULT_MSG_PROPERTY_NAME) != null) {
                     if (msg.getData().getString(CreateOrReviewProfileActivity.UPDATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.UPDATING_PROFILE_MSG_PROPERTY_VALUE_SUCCESSFUL)) {
-                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, SearchActivity.class);
+//                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, SearchActivity.class);
+                        Intent intent = new Intent(CreateOrReviewProfileActivity.this, StartTrackingActivity.class);
                         hideProgressAndShowViews();
                         startActivity(intent);
                         CreateOrReviewProfileActivity.this.finish();
-                    } else if (msg.getData().getString(CreateOrReviewProfileActivity.UPDATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.UPDATING_PROFILE_MSG_PROPERTY_VALUE_UNSUCCESSFUL)){
+                    } else if (msg.getData().getString(CreateOrReviewProfileActivity.UPDATING_PROFILE_RESULT_MSG_PROPERTY_NAME).equals(CreateOrReviewProfileActivity.UPDATING_PROFILE_MSG_PROPERTY_VALUE_UNSUCCESSFUL)) {
                         hideProgressAndShowViews();
                         Toast.makeText(CreateOrReviewProfileActivity.this, "Failed to update profile",
                                 Toast.LENGTH_LONG).show();
@@ -138,19 +138,19 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 int propertyValue = data.getIntExtra(ProfileSettingsActivity.SELECTED_ID_EXTRA_NAME, -1);
                 int propertyId = data.getIntExtra(ProfileSettingsActivity.SELECTABLE_PROPERTY_ID_EXTRA_NAME, -1);
                 //currentProfile.selectableProperties.get(propertyId).setValueId(propertyValue);
-                if(propertyValue!=(-1)&&propertyId!=(-1)) {
-                    if(propertyValue == ProfileSettingsActivity.DEFAULT_ID_EXTRA_NAME){
+                if (propertyValue != (-1) && propertyId != (-1)) {
+                    if (propertyValue == ProfileSettingsActivity.DEFAULT_ID_EXTRA_NAME) {
                         selectableProfilePropertyViewMap.get(propertyId).setValueById(-1);
                     } else {
-                        if(propertyId==4){
-                            HashMap hashMap = (HashMap)StarTrackApplication.dictionaries.get(4).get(propertyValue);
+                        if (propertyId == 4) {
+                            HashMap hashMap = (HashMap) StarTrackApplication.dictionaries.get(4).get(propertyValue);
                             int finalKey = (-1);
-                            for (Object key: hashMap.keySet()) {
-                                finalKey = (Integer)key;
+                            for (Object key : hashMap.keySet()) {
+                                finalKey = (Integer) key;
                             }
                             selectableProfilePropertyViewMap.get(propertyId).setValueById(finalKey);
                         } else {
@@ -165,29 +165,30 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
         }
     }//onActivityResult
 
-    private void showData(){
+    private void showData() {
 
 
     }
 
-    private void init(){
+    private void init() {
         this.doneButton = (Button) findViewById(R.id.DoneButton);
         doneButton.setOnClickListener(this);
         this.titleTextView = (TextView) findViewById(R.id.TitleText);
         this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
         this.progressBar.setVisibility(View.INVISIBLE);
-        this.linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+        this.linearLayout = (ScrollView) findViewById(R.id.linearLayout);
         Typeface custom_font_regular = Typeface.createFromAsset(getAssets(), "fonts/Bariol_Regular.otf");
+        doneButton.setTypeface(custom_font_regular);
         this.titleTextView.setTypeface(custom_font_regular);
         this.avatarImageView = (ImageView) findViewById(R.id.avatarImageView);
         initHandler();
     }
 
-    private void checkUpdatesOfValues(){
+    private void checkUpdatesOfValues() {
         Map<Integer, EditableProfileProperty> editableProperties = StarTrackApplication.currentProfile.editableProperties;
-        for(int i = 0; i<4;i++ ) {
-            if(editableProperties.get(i)!=null) {
-                if(editableProperties.get(i).getPropertyValue()!=null) {
+        for (int i = 0; i < 4; i++) {
+            if (editableProperties.get(i) != null) {
+                if (editableProperties.get(i).getPropertyValue() != null) {
                     if (!editableProfilePropertyViewMap.get(i).getCurrentValue().equals(editableProperties.get(i).getPropertyValue())) {
                         madeChangesFlag = true;
                         editableProperties.get(i).setPropertyValue(editableProfilePropertyViewMap.get(i).getCurrentValue());
@@ -202,16 +203,16 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
         }
 
         Map<Integer, SelectableProfileProperty> selectableProperties = StarTrackApplication.currentProfile.selectableProperties;
-        for(int i = 4; i < 9; i++) {
-            if(selectableProperties.get(i)!=null) {
-                if(selectableProfilePropertyViewMap.get(i).getValueId() != selectableProperties.get(i).getValueId()){
-                    madeChangesFlag=true;
+        for (int i = 4; i < 9; i++) {
+            if (selectableProperties.get(i) != null) {
+                if (selectableProfilePropertyViewMap.get(i).getValueId() != selectableProperties.get(i).getValueId()) {
+                    madeChangesFlag = true;
                     selectableProperties.get(i).setValueId(selectableProfilePropertyViewMap.get(i).getValueId());
                 }
             }
         }
-        if(selectableProfilePropertyViewMap.get(10).getValueId() != selectableProperties.get(10).getValueId()){
-            madeChangesFlag=true;
+        if (selectableProfilePropertyViewMap.get(10).getValueId() != selectableProperties.get(10).getValueId()) {
+            madeChangesFlag = true;
             selectableProperties.get(10).setValueId(selectableProfilePropertyViewMap.get(10).getValueId());
         }
     }
@@ -219,39 +220,41 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
     @Override
     public void onClick(View v) {
         checkUpdatesOfValues();
-        if(!madeChangesFlag) {
-            Intent intent = new Intent(this, SearchActivity.class);
+        if (!madeChangesFlag) {
+//            Intent intent = new Intent(this, SearchActivity.class);
+            Intent intent = new Intent(this, StartTrackingActivity.class);
             startActivity(intent);
             CreateOrReviewProfileActivity.this.finish();
-        } else if(madeChangesFlag && createOrReviewFlag.equals(CREATE_EXTRA_VALUE)) {
+        } else if (madeChangesFlag && createOrReviewFlag.equals(CREATE_EXTRA_VALUE)) {
             hideViewsAndShowProgress();
             new APIService.CreateProfileOperation().execute(CreateOrReviewProfileActivity.this);
-        } else if(madeChangesFlag && createOrReviewFlag.equals(REVIEW_EXTRA_VALUE)) {
+        } else if (madeChangesFlag && createOrReviewFlag.equals(REVIEW_EXTRA_VALUE)) {
             hideViewsAndShowProgress();
             new APIService.UpdateProfileOperation().execute(CreateOrReviewProfileActivity.this);
         }
     }
 
-    private void showEditableProperties(){
+    private void showEditableProperties() {
 
     }
 
-    private void showSelectableProperties(){
+    private void showSelectableProperties() {
 
     }
 
-    private void showCreateScreen(){
+    private void showCreateScreen() {
         this.titleTextView.setText("Create Profile");
     }
-    private void showReviewScreen(){
+
+    private void showReviewScreen() {
         this.titleTextView.setText("Review Profile");
     }
 
-    private void showProfile(){
+    private void showProfile() {
 
         //Load image
-        if(StarTrackApplication.currentProfile.getProfilePic()!=null){
-            if(StarTrackApplication.currentProfile.getProfilePic().length()>5){
+        if (StarTrackApplication.currentProfile.getProfilePic() != null) {
+            if (StarTrackApplication.currentProfile.getProfilePic().length() > 5) {
                 new DownloadImageTask(this, this.avatarImageView)
                         .execute(StarTrackApplication.currentProfile.getProfilePic());
             }
@@ -262,26 +265,26 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
         SelectableProfilePropertyView selectableProfilePropertyView = new SelectableProfilePropertyView(this, selectableProfileProperty);*/
 
         Map<Integer, EditableProfileProperty> editableProperties = StarTrackApplication.currentProfile.editableProperties;
-        for(int i = 0; i<2;i++ ) {
-            if(editableProperties.get(i)!=null) {
+        for (int i = 0; i < 2; i++) {
+            if (editableProperties.get(i) != null) {
                 EditableProfilePropertyView editableProfilePropertyView = new EditableProfilePropertyView(this, editableProperties.get(i));
-                editableProfilePropertyViewMap.put(i,editableProfilePropertyView);
+                editableProfilePropertyViewMap.put(i, editableProfilePropertyView);
                 this.propertiesLinearLayout.addView(editableProfilePropertyView);
             }
         }
         EditableProfilePropertyView cityEditableProfilePropertyView = new EditableProfilePropertyView(this, editableProperties.get(11));
-        editableProfilePropertyViewMap.put(11,cityEditableProfilePropertyView);
+        editableProfilePropertyViewMap.put(11, cityEditableProfilePropertyView);
         this.propertiesLinearLayout.addView(cityEditableProfilePropertyView);
-        for(int i = 2; i<4;i++ ) {
-            if(editableProperties.get(i)!=null) {
+        for (int i = 2; i < 4; i++) {
+            if (editableProperties.get(i) != null) {
                 EditableProfilePropertyView editableProfilePropertyView = new EditableProfilePropertyView(this, editableProperties.get(i));
-                editableProfilePropertyViewMap.put(i,editableProfilePropertyView);
+                editableProfilePropertyViewMap.put(i, editableProfilePropertyView);
                 this.propertiesLinearLayout.addView(editableProfilePropertyView);
             }
         }
         Map<Integer, SelectableProfileProperty> selectableProperties = StarTrackApplication.currentProfile.selectableProperties;
-        for(int i = 5; i < 9; i++) {
-            if(selectableProperties.get(i)!=null) {
+        for (int i = 5; i < 9; i++) {
+            if (selectableProperties.get(i) != null) {
                 SelectableProfilePropertyView selectableProfilePropertyView = new SelectableProfilePropertyView(this, selectableProperties.get(i));
                 selectableProfilePropertyViewMap.put(i, selectableProfilePropertyView);
                 this.propertiesLinearLayout.addView(selectableProfilePropertyView);
@@ -320,13 +323,13 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
         }
 
         protected void onPostExecute(Bitmap result) {
-            if(result!=null) {
+            if (result != null) {
                 bmImage.setImageBitmap(RoundedImageView.getCroppedBitmap(result, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 150, mContext.getResources().getDisplayMetrics())));
             }
         }
     }
 
-    public void hideProgressAndShowViews(){
+    public void hideProgressAndShowViews() {
         this.linearLayout.setVisibility(View.VISIBLE);
         this.progressBar.setVisibility(View.INVISIBLE);
     }
@@ -341,7 +344,7 @@ public class CreateOrReviewProfileActivity extends Activity implements View.OnCl
 
     }
 
-    public void hideViewsAndShowProgress(){
+    public void hideViewsAndShowProgress() {
         this.linearLayout.setVisibility(View.INVISIBLE);
         this.progressBar.setVisibility(View.VISIBLE);
     }

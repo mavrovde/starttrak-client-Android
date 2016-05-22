@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
@@ -72,6 +74,7 @@ public class SelectableProfilePropertyView extends RelativeLayout implements Vie
         this.propertyId = selectableProfileProperty.getPropertyId();
         this.valueId = selectableProfileProperty.getValueId();
         this.propertyName.setText(selectableProfileProperty.getProfilePropertyName());
+        this.selectedPropertyValue.setHint(selectableProfileProperty.getProfilePropertyName());
         Typeface custom_font_regular = Typeface.createFromAsset(activity.getAssets(), "fonts/Bariol_Regular.otf");
         this.propertyName.setTypeface(custom_font_regular);
         this.selectedPropertyValue.setTypeface(custom_font_regular);
@@ -115,6 +118,25 @@ public class SelectableProfilePropertyView extends RelativeLayout implements Vie
         Typeface custom_font = Typeface.createFromAsset(getContext().getAssets(), "fonts/Bariol_Regular.otf");
         this.propertyName.setTypeface(custom_font);
         this.selectedPropertyValue.setTypeface(custom_font);
+
+        this.selectedPropertyValue.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                    propertyName.setVisibility(VISIBLE);
+                else propertyName.setVisibility(INVISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     public ImageButton getSelectPropertyButton() {

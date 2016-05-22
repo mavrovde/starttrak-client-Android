@@ -30,6 +30,18 @@
         <item name="colorAccent">@color/edit_message_dark</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.PropChoose" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/edit_message_dark</item>
+        <item name="colorPrimaryDark">@color/edit_message_dark</item>
+        <item name="colorAccent">@color/edit_message_dark</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.StartTracking" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.NoActionBar.FullScreen" parent="@style/AppTheme.NoActionBar">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -67,5 +79,21 @@
         <item name="android:layout_margin">8dp</item>
         <item name="android:background">@drawable/drop_down_search</item>
     </style>
+
+    <style name="SelectableProperty">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:background">@drawable/drop_down_search</item>
+    </style>
+
+    <style name="WhiteRadioButton">
+        <item name="android:background">@drawable/radio</item>
+    </style>
+    <!--<item name="radioButtonStyle">@style/YourRadioButtonStyle</item>-->
 
 </resources>

@@ -203,43 +203,47 @@ public class WelcomeActivity extends Activity implements IActivityWithHandler, V
         this.linkedinButton.setTypeface(custom_font_regular);
         this.xingButton.setTypeface(custom_font_regular);
         this.SignIn.setTypeface(custom_font_bold);
-        setupSignInButton();
-        setupFbButton();
-        setupLnButton();
-        setupXingButton();
+//        setupSignInButton();
+//        setupFbButton();
+//        setupLnButton();
+//        setupXingButton();
     }
 
-    private void setupSignInButton() {
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_email);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        signUpWithEmailButton.setCompoundDrawables(drawable, null, null, null);
-        signUpWithEmailButton.setPadding(
-                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0, 0, 0);
-    }
+//    private void setupSignInButton() {
+//        Drawable drawable = getResources().getDrawable(R.drawable.ic_email);
+//        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+//        signUpWithEmailButton.setCompoundDrawables(drawable, null, null, null);
+//        signUpWithEmailButton.setPadding(
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0,
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0);
+//    }
 
-    private void setupFbButton() {
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_fb);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        facebookButton.setCompoundDrawables(drawable, null, null, null);
-        facebookButton.setPadding(
-                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0, 0, 0);
-    }
+//    private void setupFbButton() {
+//        Drawable drawable = getResources().getDrawable(R.drawable.ic_fb);
+//        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+//        facebookButton.setCompoundDrawables(drawable, null, null, null);
+//        facebookButton.setPadding(
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0,
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0);
+//    }
 
-    private void setupLnButton() {
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_ln);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        linkedinButton.setCompoundDrawables(drawable, null, null, null);
-        linkedinButton.setPadding(
-                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0, 0, 0);
-    }
+//    private void setupLnButton() {
+//        Drawable drawable = getResources().getDrawable(R.drawable.ic_ln);
+//        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+//        linkedinButton.setCompoundDrawables(drawable, null, null, null);
+//        linkedinButton.setPadding(
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0,
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0);
+//    }
 
-    private void setupXingButton() {
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_xing);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        xingButton.setCompoundDrawables(drawable, null, null, null);
-        xingButton.setPadding(
-                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0, 0, 0);
-    }
+//    private void setupXingButton() {
+//        Drawable drawable = getResources().getDrawable(R.drawable.ic_xing);
+//        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+//        xingButton.setCompoundDrawables(drawable, null, null, null);
+//        xingButton.setPadding(
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0,
+//                getResources().getDimensionPixelSize(R.dimen.fb_margin_override_lr), 0);
+//    }
 
     public void hideProgressAndShowViews() {
 /*        this.SignIn.setVisibility(View.VISIBLE);

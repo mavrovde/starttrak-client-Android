@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -36,26 +37,30 @@ public class MatchesActivity extends Activity implements IActivityWithHandler {
     private TextView titleText;
 
     public static List<Integer> checkedItems = new ArrayList<Integer>();
-
+    private boolean isSelected;
 
     private Handler handler;
 
     public static String MEET_RESULT_MSG_PROPERTY_NAME = "MeetResultMsgPropertyName";
     public static String MEET_RESULT_MSG_PROPERTY_VALUE_SUCCESSFUL = "MeetResultMsgPropertyValueSuccessful";
     public static String MEET_RESULT_MSG_PROPERTY_VALUE_UNSUCCESSFUL = "MeetResultMsgPropertyValueUnsuccessful";
+    private MatchesAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matches);
         init();
+        mAdapter = new MatchesAdapter(this, StarTrackApplication.searchResults);
 
     }
 
     @Override
     protected void onResume() {
         MatchesActivity.checkedItems.clear();
-        listView.setAdapter(new MatchesAdapter(this, StarTrackApplication.searchResults));
+        listView.setAdapter(mAdapter);
+        hideProgressAndShowViews();
+        updateSelectButton();
         super.onResume();
     }
 
@@ -66,12 +71,43 @@ public class MatchesActivity extends Activity implements IActivityWithHandler {
         this.relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
 //        this.linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        this.progressBar.setVisibility(View.INVISIBLE);
+
         Typeface custom_font_regular = Typeface.createFromAsset(getAssets(), "fonts/Bariol_Regular.otf");
         this.titleText = (TextView) findViewById(R.id.TitleText);
         this.titleText.setTypeface(custom_font_regular);
         this.tvSelectUnselect.setTypeface(custom_font_regular);
+        this.tvSelectUnselect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSelected) {
+                    MatchesActivity.checkedItems.clear();
+                    tvSelectUnselect.setText("Select All");
+                } else {
+                    for (int i = 0; i < StarTrackApplication.searchResults.size(); i++) {
+                        MatchesActivity.checkedItems.add(
+                                StarTrackApplication.searchResults.get(i).getUserId());
+                    }
+                    tvSelectUnselect.setText("Unselect");
+                }
+                isSelected = !isSelected;
+                mAdapter.notifyDataSetChanged();
+            }
+        });
         initHandler();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int userId = StarTrackApplication.searchResults.get(position).getUserId();
+                if (MatchesActivity.checkedItems.contains(userId)) {
+                    MatchesActivity.checkedItems.remove((Object) userId);
+                } else {
+                    MatchesActivity.checkedItems.add(userId);
+                }
+                updateSelectButton();
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void initHandler() {
@@ -91,6 +127,16 @@ public class MatchesActivity extends Activity implements IActivityWithHandler {
             }
 
         };
+    }
+
+    public void updateSelectButton() {
+        if (MatchesActivity.checkedItems.size() > 0) {
+            tvSelectUnselect.setText("Unselect");
+            isSelected = true;
+        } else {
+            tvSelectUnselect.setText("Select All");
+            isSelected = false;
+        }
     }
 
     public void hideProgressAndShowViews() {

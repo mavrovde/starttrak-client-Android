@@ -1,40 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layoutDirection="ltr"
-    android:layout_width="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp">
+<?xml version="1.0" encoding="utf-8"?><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical">-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <TextView
         android:id="@+id/propertyName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="50dp"
-        android:layout_alignParentTop="true"
-        android:textColor="#ffffff"
-        android:text="COMPANY SIZE"/>
-        <EditText
-            android:id="@+id/propertyValueEditText"
-            android:colorAccent="#ffffff"
-            android:textCursorDrawable="@null"
-            android:layout_below="@+id/propertyName"
-            android:textSize="20sp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="50dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textColor="#ffffff"
-            android:text="None"/>
-    </RelativeLayout>
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"
+        android:text="COMPANY SIZE"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <!--<EditText-->
+    <!--android:id="@+id/propertyValueEditText"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/propertyName"-->
+    <!--android:layout_marginBottom="5dp"-->
+    <!--android:layout_marginLeft="50dp"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:colorAccent="#ffffff"-->
+    <!--android:singleLine="true"-->
+    <!--android:text="None"-->
+    <!--android:textColor="#ffffff"-->
+    <!--android:textCursorDrawable="@null"-->
+    <!--android:textSize="20sp" />-->
+
+    <EditText
+        android:id="@+id/propertyValueEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/propertyName"
+        android:layout_centerVertical="true"
+        android:background="@null"
+        android:colorAccent="@android:color/white"
+        android:hint="Hint"
+        android:paddingBottom="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:textSize="20sp" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/line_profile"/>
-</LinearLayout>
+        android:layout_below="@+id/propertyValueEditText"
+        android:scaleType="centerCrop"
+        android:src="@drawable/line_signup" />
+</RelativeLayout><!--</LinearLayout>-->

@@ -2,12 +2,9 @@ package com.startrack.android.startrack_android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +15,8 @@ import android.widget.TextView;
 import com.startrack.android.startrack_android.R;
 import com.startrack.android.startrack_android.activity.MatchesActivity;
 import com.startrack.android.startrack_android.model.Profile;
-import com.startrack.android.startrack_android.view.RoundedImageView;
+import com.startrack.android.startrack_android.utils.ImageUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,11 +70,19 @@ public class MatchesAdapter extends BaseAdapter {
             holder.name.setTypeface(custom_font_bold);
             holder.title = (TextView) vi.findViewById(R.id.title);
             holder.title.setTypeface(custom_font_regular);
+            holder.initials = (TextView) vi.findViewById(R.id.initials);
+            holder.initials.setTypeface(custom_font_regular);
             holder.location = (TextView) vi.findViewById(R.id.location);
             holder.location.setTypeface(custom_font_regular);
             holder.source = (TextView) vi.findViewById(R.id.source);
             holder.source.setTypeface(custom_font_regular);
             holder.checkBoxImageView = (ImageView) vi.findViewById(R.id.checkboxImageView);
+
+            if (MatchesActivity.checkedItems.contains(vi.getTag()))
+                holder.checkBoxImageView.setImageResource(R.drawable.dot_selected_matches);
+            else
+                holder.checkBoxImageView.setImageResource(R.drawable.dot_matches);
+
             holder.checkBoxImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -92,40 +96,47 @@ public class MatchesAdapter extends BaseAdapter {
                         ImageView imageView = (ImageView) v;
                         imageView.setImageResource(R.drawable.dot_selected_matches);
                     }
+                    ((MatchesActivity) activity).updateSelectButton();
                 }
             });
-            holder.initials = (TextView) vi.findViewById(R.id.initials);
-            holder.initials.setTypeface(custom_font_regular);
             vi.setTag(holder);
         } else {
             holder = (ViewHolder) vi.getTag();
         }
 
 
-        if (!profile.getProfilePic().equals("")) {
-            holder.initials.setVisibility(View.INVISIBLE);
-            //holder.image.setVisibility(View.VISIBLE);
-            Log.d("TAG1", "ss=" + profile.getProfilePic());
-            new DownloadImageTask(activity, holder.image)
-                    .execute(profile.getProfilePic());
-        } else {
-            holder.initials.setVisibility(View.VISIBLE);
-            //holder.image.setVisibility(View.INVISIBLE);
-            holder.image.setImageResource(R.drawable.no_photo);
-            String initialsString = new String();
-            if (profile.editableProperties.get(0).hasValue()) {
-                initialsString = "" + profile.editableProperties.get(0).getPropertyValue().charAt(0);
-            }
-            if (profile.editableProperties.get(1).hasValue()) {
-                initialsString = initialsString + profile.editableProperties.get(1).getPropertyValue().charAt(0);
-            }
-            initialsString = initialsString.toUpperCase();
-            if (initialsString.length() > 0) {
-                holder.initials.setText(initialsString);
-            } else {
-                holder.initials.setText("NN");
-            }
+//        if (!profile.getProfilePic().equals("")) {
+//            holder.initials.setVisibility(View.INVISIBLE);
+//            //holder.image.setVisibility(View.VISIBLE);
+////            new DownloadImageTask(activity, holder.image)
+////                    .execute(profile.getProfilePic());
+//
+//        } else {
+//        holder.initials.setVisibility(View.VISIBLE);
+        //holder.image.setVisibility(View.INVISIBLE);
+//        holder.image.setImageResource(R.drawable.no_photo);
+
+        String initials = "NN";
+        StringBuilder initialsString = new StringBuilder();
+        if (profile.editableProperties.get(0).hasValue()) {
+            initialsString.append(profile.editableProperties.get(0).getPropertyValue().charAt(0));
         }
+        if (profile.editableProperties.get(1).hasValue()) {
+            initialsString.append(profile.editableProperties.get(1).getPropertyValue().charAt(0));
+        }
+
+        Log.d("TAG1", "initString = " + initialsString.toString());
+
+        if (!TextUtils.isEmpty(initialsString)) {
+            initials = initialsString.toString().toUpperCase();
+        }
+        Log.d("TAG1", "initials = " + initials);
+
+        holder.initials.setText(initials);
+
+        ImageUtils.setImage(profile.getProfilePic(), holder.image);
+
+//        }
         if (MatchesActivity.checkedItems.contains(profile.getUserId())) {
             holder.checkBoxImageView.setImageResource(R.drawable.dot_selected_matches);
         } else {
@@ -211,32 +222,35 @@ public class MatchesAdapter extends BaseAdapter {
 
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-        private Context mContext;
-
-        public DownloadImageTask(Context context, ImageView bmImage) {
-            mContext = context;
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            if (result != null) {
-                bmImage.setImageBitmap(RoundedImageView.getCroppedBitmap(result, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 80, mContext.getResources().getDisplayMetrics())));
-            }
-        }
-    }
+//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+//        ImageView bmImage;
+//        private Context mContext;
+//
+//        public DownloadImageTask(Context context, ImageView bmImage) {
+//            mContext = context;
+//            this.bmImage = bmImage;
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            String urldisplay = urls[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            if (result != null) {
+//                bmImage.setImageBitmap(
+//                        RoundedImageView.getCroppedBitmap(result,
+//                                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 80,
+//                                        mContext.getResources().getDisplayMetrics())));
+//            }
+//        }
+//    }
 }

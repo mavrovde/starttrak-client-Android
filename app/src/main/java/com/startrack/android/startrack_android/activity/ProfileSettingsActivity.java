@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.startrack.android.startrack_android.R;
 import com.startrack.android.startrack_android.app.StarTrackApplication;
-import com.startrack.android.startrack_android.model.SelectableProfileProperty;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -25,7 +24,7 @@ import java.util.Set;
 /**
  * Created by vrogovskiy on 2/11/16.
  */
-public class ProfileSettingsActivity extends Activity  {
+public class ProfileSettingsActivity extends Activity {
 
     public static String SELECTABLE_PROPERTY_ID_EXTRA_NAME = "SelectablePropertyIdExtraName";
     public static String SELECTED_ID_EXTRA_NAME = "SelectedIdExtraName";
@@ -53,8 +52,8 @@ public class ProfileSettingsActivity extends Activity  {
         fillRadioGroup();
     }
 
-    private void setTitle(){
-        if(this.currentMode.equals(PROFILE_SETTINGS_MODE_PROFILE_EXTRA_VALUE)) {
+    private void setTitle() {
+        if (this.currentMode.equals(PROFILE_SETTINGS_MODE_PROFILE_EXTRA_VALUE)) {
             switch (this.propertyId) {
                 case 4:
                     this.propertyNameTextView.setText("Choose Your company size level");
@@ -76,7 +75,7 @@ public class ProfileSettingsActivity extends Activity  {
                     break;
 
             }
-        } else if(this.currentMode.equals(PROFILE_SETTINGS_MODE_SEARCH_EXTRA_VALUE)){
+        } else if (this.currentMode.equals(PROFILE_SETTINGS_MODE_SEARCH_EXTRA_VALUE)) {
             switch (this.propertyId) {
                 case 5:
                     this.propertyNameTextView.setText("Choose title");
@@ -108,51 +107,55 @@ public class ProfileSettingsActivity extends Activity  {
         this.propertyId = getIntent().getIntExtra(SELECTABLE_PROPERTY_ID_EXTRA_NAME, -1);
         this.currentMode = getIntent().getStringExtra(PROFILE_SETTINGS_MODE_EXTRA_NAME);
         this.propertySelectedValue = getIntent().getIntExtra(ProfileSettingsActivity.SELECTED_ID_EXTRA_NAME, -1);
+        this.doneButton.setTypeface(custom_font_regular);
     }
 
-    private void fillRadioGroup(){
+    private void fillRadioGroup() {
         ColorStateList colorStateList = new ColorStateList(
                 new int[][]{
 
                         new int[]{-android.R.attr.state_enabled}, //disabled
                         new int[]{android.R.attr.state_enabled} //enabled
                 },
-                new int[] {
+                new int[]{
 
                         Color.BLACK //disabled
-                        ,Color.WHITE //enabled
+                        , Color.WHITE //enabled
 
                 }
         );
         Typeface custom_font_regular = Typeface.createFromAsset(getAssets(), "fonts/Bariol_Regular.otf");
         RadioButton firstRadioButton = new RadioButton(this);
-        if(currentMode.equals(PROFILE_SETTINGS_MODE_PROFILE_EXTRA_VALUE)){
+        if (currentMode.equals(PROFILE_SETTINGS_MODE_PROFILE_EXTRA_VALUE)) {
             firstRadioButton.setText("None");
             firstRadioButton.setId(R.id.default_value);
-        } else if(currentMode.equals(PROFILE_SETTINGS_MODE_SEARCH_EXTRA_VALUE)){
+        } else if (currentMode.equals(PROFILE_SETTINGS_MODE_SEARCH_EXTRA_VALUE)) {
             firstRadioButton.setText("All");
             firstRadioButton.setId(R.id.default_value);
         }
-        if(this.propertySelectedValue==(-1)){
+        if (this.propertySelectedValue == (-1)) {
             firstRadioButton.setChecked(true);
         }
         firstRadioButton.setTextColor(Color.WHITE);
         firstRadioButton.setTypeface(custom_font_regular);
         firstRadioButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        firstRadioButton.setButtonDrawable(R.drawable.radio);
 //        firstRadioButton.setButtonTintList(colorStateList);//set the color tint list
         firstRadioButton.invalidate(); //could not be necessar
         this.radioGroup.addView(firstRadioButton);
-        if(this.propertyId==4){
-            Map<Integer, Map<Integer, String>> propertyMapValues = StarTrackApplication.dictionaries.get(this.propertyId);
+        if (this.propertyId == 4) {
+            Map<Integer, Map<Integer, String>> propertyMapValues =
+                    StarTrackApplication.dictionaries.get(this.propertyId);
 
             Iterator itr = propertyMapValues.values().iterator();
-            while(itr.hasNext()) {
+            while (itr.hasNext()) {
                 Map<Integer, String> element = (Map<Integer, String>) itr.next();
 
                 RadioButton radioButton = new RadioButton(this);
                 radioButton.setText((String) element.values().toArray()[0]);
                 radioButton.setTextColor(Color.WHITE);
                 radioButton.setId(element.keySet().iterator().next());
+                radioButton.setButtonDrawable(R.drawable.radio);
                 if (element.keySet().iterator().next() == this.propertySelectedValue) {
                     radioButton.setChecked(true);
                 }
@@ -161,7 +164,7 @@ public class ProfileSettingsActivity extends Activity  {
                 //radioButton.setButtonTintList(Color.WHITE);
 
 
-                radioButton.setButtonTintList(colorStateList);//set the color tint list
+//                radioButton.setButtonTintList(colorStateList);//set the color tint list
                 radioButton.invalidate(); //could not be necessar
                 this.radioGroup.addView(radioButton);
             }
@@ -174,12 +177,13 @@ public class ProfileSettingsActivity extends Activity  {
                 radioButton.setText(propertyValues.get(i));
                 radioButton.setTextColor(Color.WHITE);
                 radioButton.setId(i);
+                radioButton.setButtonDrawable(R.drawable.radio);
                 if (i == this.propertySelectedValue) {
                     radioButton.setChecked(true);
                 }
                 radioButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                 radioButton.setTypeface(custom_font_regular);
-                radioButton.setButtonTintList(colorStateList);//set the color tint list
+//                radioButton.setButtonTintList(colorStateList);//set the color tint list
                 radioButton.invalidate(); //could not be necessar
                 this.radioGroup.addView(radioButton);
             }
@@ -189,13 +193,13 @@ public class ProfileSettingsActivity extends Activity  {
     public void doneOnClick(View v) {
         Intent returnIntent = new Intent();
         int checkedRadioButtonId = this.radioGroup.getCheckedRadioButtonId();
-        if(checkedRadioButtonId == R.id.default_value){
+        if (checkedRadioButtonId == R.id.default_value) {
             returnIntent.putExtra(ProfileSettingsActivity.SELECTED_ID_EXTRA_NAME, DEFAULT_ID_EXTRA_NAME);
         } else {
-            if(this.propertyId!=4) {
+            if (this.propertyId != 4) {
                 returnIntent.putExtra(ProfileSettingsActivity.SELECTED_ID_EXTRA_NAME, checkedRadioButtonId);
             } else {
-                switch(checkedRadioButtonId){
+                switch (checkedRadioButtonId) {
                     case 1:
                         returnIntent.putExtra(ProfileSettingsActivity.SELECTED_ID_EXTRA_NAME, 0);
                         break;

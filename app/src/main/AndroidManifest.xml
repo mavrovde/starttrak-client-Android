@@ -40,7 +40,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme" />
+            android:theme="@style/AppTheme.NoActionBar.StartTracking" />
         <activity
             android:name=".activity.CreateOrReviewProfileActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -57,6 +57,10 @@
             android:name=".activity.EditMessageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.EditMessage" />
+        <activity
+            android:name=".activity.StartTrackingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar.StartTracking" />
     </application>
 
 </manifest>

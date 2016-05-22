@@ -1,46 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layoutDirection="ltr"
-    android:layout_width="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp">
+<?xml version="1.0" encoding="utf-8"?><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical">-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--<TextView-->
+    <!--android:id="@+id/propertyName"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_marginBottom="5dp"-->
+    <!--android:layout_marginLeft="50dp"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:text="COMPANY SIZE"-->
+    <!--android:textColor="#ffffff"-->
+    <!--android:textSize="14sp" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/selectedPropertyValue"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/propertyName"-->
+    <!--android:layout_marginBottom="5dp"-->
+    <!--android:layout_marginLeft="50dp"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:text="None"-->
+    <!--android:textColor="#ffffff"-->
+    <!--android:textSize="20sp" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/selectPropertyButton"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_marginRight="50dp"-->
+    <!--android:background="@drawable/drop_down_profile"-->
+    <!--android:scaleType="centerCrop" />-->
+
     <TextView
         android:id="@+id/propertyName"
-        android:textSize="14sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="50dp"
-        android:layout_alignParentTop="true"
-        android:textColor="#ffffff"
-        android:text="COMPANY SIZE"/>
-        <TextView
-            android:id="@+id/selectedPropertyValue"
-            android:layout_below="@+id/propertyName"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="50dp"
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#ffffff"
-            android:text="None"/>
-    <ImageButton
-        android:id="@+id/selectPropertyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="50dp"
-        android:background="@drawable/drop_down_profile"/>
-    </RelativeLayout>
-    <ImageView
+        style="@style/SearchTitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/line_profile"/>
-</LinearLayout>
+        android:layout_toLeftOf="@+id/selectPropertyButton"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"
+        android:text="COMPANY SIZE"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/selectedPropertyValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/propertyName"
+        android:layout_toLeftOf="@+id/selectPropertyButton"
+        android:background="@null"
+        android:colorAccent="@android:color/white"
+        android:hint="Hint"
+        android:paddingBottom="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:singleLine="true"
+        android:text="Hint"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/selectPropertyButton"
+        style="@style/SelectableProperty"
+        android:layout_above="@+id/line" />
+
+    <ImageView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/selectedPropertyValue"
+        android:scaleType="centerCrop"
+        android:src="@drawable/line_signup" />
+</RelativeLayout>
+
+    <!--<ImageView--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/line_profile" />--><!--</LinearLayout>-->

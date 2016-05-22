@@ -70,4 +70,10 @@
         android:text="Send"
         android:textAllCaps="false"
         android:textSize="20sp" />
+
+    <ProgressBar
+        android:id="@+id/pb_edit_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 </RelativeLayout>

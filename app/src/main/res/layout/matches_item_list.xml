@@ -9,14 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_margin="16dp">
-
-        <ImageView
-            android:id="@+id/photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:src="@drawable/no_photo" />
+        android:layout_margin="16dp"
+        android:background="@drawable/no_photo">
 
         <TextView
             android:id="@+id/initials"
@@ -26,6 +20,20 @@
             android:text="AA"
             android:textColor="@android:color/white"
             android:textSize="36sp" />
+
+        <!--<ImageView-->
+        <!--android:id="@+id/photo"-->
+        <!--android:layout_width="72dp"-->
+        <!--android:layout_height="72dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:src="@drawable/no_photo" />-->
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/photo"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:scaleType="centerCrop" />
+
     </RelativeLayout>
 
     <LinearLayout

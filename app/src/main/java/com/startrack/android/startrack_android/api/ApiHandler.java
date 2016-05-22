@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.startrack.android.startrack_android.activity.CreateOrReviewProfileActivity;
 import com.startrack.android.startrack_android.activity.IActivityWithHandler;
 import com.startrack.android.startrack_android.activity.SearchActivity;
+import com.startrack.android.startrack_android.activity.StartTrackingActivity;
 import com.startrack.android.startrack_android.app.StarTrackApplication;
 
 /**
@@ -201,8 +202,9 @@ public class ApiHandler extends Handler {
                     this.activity.getActivity().startActivity(intent);
                     this.activity.getActivity().finish();
                 } else {
-                    Intent intent = new Intent(this.activity.getActivity(), SearchActivity.class);
-                    //this.activity.hideProgressAndShowViews();
+//                    Intent intent = new Intent(this.activity.getActivity(), SearchActivity.class);
+                    Intent intent = new Intent(this.activity.getActivity(), StartTrackingActivity.class);
+//                    this.activity.hideProgressAndShowViews();
                     this.activity.getActivity().startActivity(intent);
                     this.activity.getActivity().finish();
                 }

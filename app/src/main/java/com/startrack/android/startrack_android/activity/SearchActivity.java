@@ -46,6 +46,8 @@ public class SearchActivity extends Activity implements IActivityWithHandler {
     private TextView CompanySizeTitleTextView;
     private TextView CompanySizeValueTextView;
 
+    private Button searchButton;
+
 
 
     private ProgressBar progressBar;
@@ -153,6 +155,8 @@ public class SearchActivity extends Activity implements IActivityWithHandler {
         this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
         this.progressBar.setVisibility(View.INVISIBLE);
 
+        this.searchButton = (Button) findViewById(R.id.SearchButton);
+
         this.searchEditText.setTypeface(custom_font_regular);
         this.titleTextView.setTypeface(custom_font_regular);
         this.SeniorityLevelTitleTextView.setTypeface(custom_font_regular);
@@ -165,6 +169,7 @@ public class SearchActivity extends Activity implements IActivityWithHandler {
         this.PositionValueTextView.setTypeface(custom_font_regular);
         this.CompanySizeTitleTextView.setTypeface(custom_font_regular);
         this.CompanySizeValueTextView.setTypeface(custom_font_regular);
+        this.searchButton.setTypeface(custom_font_regular);
     }
 
     public void titleButtonOnClick(View v) {
